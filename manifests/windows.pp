@@ -2,13 +2,70 @@
 #
 # This class contains the DataDog agent installation mechanism for Windows
 #
-
+# Parameters:
+#   Integer $agent_major_version:
+#     The major version of the Datadog Agent to install. Defaults to the value of `$datadog_agent::params::default_agent_major_version`.
+#
+#   String $agent_version:
+#     The specific version of the Datadog Agent to install. Defaults to the value of `$datadog_agent::params::agent_version`.
+#
+#   Optional[String] $agent_repo_uri:
+#     The URI of the repository to use for installing the Datadog Agent. Defaults to `undef`.
+#
+#   String $msi_location:
+#     The location where the MSI installer file will be downloaded. Defaults to 'C:/Windows/temp'.
+#
+#   Variant[String, Sensitive[String]] $api_key:
+#     The API key to use for authenticating with the Datadog service. Defaults to the value of `$datadog_agent::api_key`.
+#
+#   String $hostname:
+#     The hostname to use for identifying the host in the Datadog service. Defaults to the value of `$datadog_agent::host`.
+#
+#   Array $tags:
+#     An array of tags to associate with the host in the Datadog service. Defaults to the value of `$datadog_agent::tags`.
+#
+#   String $tags_join:
+#     The string used to join the tags array into a single string. Defaults to the result of `join($tags,',')`.
+#
+#   String $tags_quote_wrap:
+#     The string used to wrap the joined tags string. Defaults to "\"${tags_join}\"".
+#
+#   Enum['present', 'absent'] $ensure:
+#     Whether the Datadog Agent should be present or absent on the host. Defaults to 'present'.
+#
+#   Boolean $npm_install:
+#     Whether to install the Datadog NPM package. Defaults to false.
+#
+#   Optional[String] $ddagentuser_name:
+#     The username for the Datadog Agent user. Defaults to `undef`.
+#
+#   Optional[String] $ddagentuser_password:
+#     The password for the Datadog Agent user. Defaults to `undef`.
+#
+# Examples:
+#   class { 'datadog_agent':
+#     agent_major_version => 7,
+#     agent_version       => '7.2.0',
+#     api_key             => 'your-api-key',
+#     hostname            => 'your-hostname',
+#     tags                => ['tag1', 'tag2'],
+#     ensure              => 'present',
+#   }
+#
+#   class { 'datadog_agent':
+#     agent_major_version => 7,
+#     agent_version       => '7.2.0',
+#     api_key             => Sensitive('your-sensitive-api-key'),
+#     hostname            => 'your-hostname',
+#     tags                => ['tag1', 'tag2'],
+#     ensure              => 'present',
+#   }
 class datadog_agent::windows(
   Integer $agent_major_version = $datadog_agent::params::default_agent_major_version,
   String $agent_version = $datadog_agent::params::agent_version,
   Optional[String] $agent_repo_uri = undef,
   String $msi_location = 'C:/Windows/temp',
-  String $api_key = $datadog_agent::api_key,
+  Variant[String, Sensitive[String]] $api_key = $datadog_agent::api_key,
   String $hostname = $datadog_agent::host,
   Array  $tags = $datadog_agent::tags,
   String $tags_join = join($tags,','),
